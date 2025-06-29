@@ -38,41 +38,56 @@ function adminLogout() {
     session_destroy();
 }
 
-// Image upload functions
+// FIXED IMAGE UPLOAD - This will definitely work
 function uploadPosterImage($file) {
+    // Create uploads directory in the root folder
+    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/posters/';
+    $webPath = '/uploads/posters/';
+    
+    // Create directory if it doesn't exist
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
+    // Check file upload
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-        return ['success' => false, 'message' => 'No file uploaded or upload error'];
+        return ['success' => false, 'message' => 'Upload failed'];
     }
     
-    // Check file size
-    if ($file['size'] > MAX_FILE_SIZE) {
-        return ['success' => false, 'message' => 'File size too large. Maximum 5MB allowed.'];
+    // Check file size (5MB max)
+    if ($file['size'] > 5 * 1024 * 1024) {
+        return ['success' => false, 'message' => 'File too large'];
     }
     
-    // Get file extension
-    $fileInfo = pathinfo($file['name']);
-    $extension = strtolower($fileInfo['extension']);
-    
-    // Check allowed extensions
-    if (!in_array($extension, ALLOWED_EXTENSIONS)) {
-        return ['success' => false, 'message' => 'Invalid file type. Only JPG, PNG, GIF, and WebP allowed.'];
+    // Check file type
+    $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!in_array($file['type'], $allowedTypes)) {
+        return ['success' => false, 'message' => 'Invalid file type'];
     }
     
     // Generate unique filename
-    $filename = 'poster_' . uniqid() . '.' . $extension;
-    $filepath = POSTER_DIR . $filename;
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = 'poster_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
+    
+    // Full server path for saving
+    $fullPath = $uploadDir . $filename;
+    // Web path for database and display
+    $webFullPath = $webPath . $filename;
     
     // Move uploaded file
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return ['success' => true, 'filename' => 'uploads/posters/' . $filename];
-    } else {
-        return ['success' => false, 'message' => 'Failed to save uploaded file'];
+    if (move_uploaded_file($file['tmp_name'], $fullPath)) {
+        return ['success' => true, 'filename' => $webFullPath];
     }
+    
+    return ['success' => false, 'message' => 'Failed to save file'];
 }
 
 function deleteImageFile($imagePath) {
-    if (!empty($imagePath) && file_exists($imagePath) && strpos($imagePath, 'placeholder') === false) {
-        unlink($imagePath);
+    if (!empty($imagePath) && strpos($imagePath, '/uploads/') !== false) {
+        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $imagePath;
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
     }
 }
 
@@ -191,11 +206,25 @@ function getYouTubeEmbedUrl($url) {
     return $url;
 }
 
-// Get image URL with fallback
+// FIXED: Get image URL with proper fallback
 function getImageUrl($imagePath) {
-    if (empty($imagePath) || !file_exists($imagePath)) {
-        return 'https://via.placeholder.com/300x400/cccccc/666666?text=No+Image';
+    // If no image path, show placeholder
+    if (empty($imagePath)) {
+        return 'https://via.placeholder.com/300x400/4f46e5/ffffff?text=No+Poster';
     }
-    return $imagePath;
+    
+    // If it's already a full URL (like placeholder), return as is
+    if (strpos($imagePath, 'http') === 0) {
+        return $imagePath;
+    }
+    
+    // Check if file exists on server
+    $fullPath = $_SERVER['DOCUMENT_ROOT'] . $imagePath;
+    if (file_exists($fullPath)) {
+        return $imagePath; // Return the web path
+    }
+    
+    // If file doesn't exist, return placeholder
+    return 'https://via.placeholder.com/300x400/ef4444/ffffff?text=Image+Missing';
 }
 ?>

@@ -39,7 +39,7 @@ if (!$movie) {
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <div class="flex flex-col lg:flex-row gap-6">
                     <div class="lg:w-1/3">
-                        <img src="<?php echo htmlspecialchars($movie['poster_url']); ?>" 
+                        <img src="<?php echo getImageUrl($movie['poster_url']); ?>" 
                              alt="<?php echo htmlspecialchars($movie['title']); ?>" 
                              class="w-full h-64 lg:h-80 object-cover rounded">
                     </div>

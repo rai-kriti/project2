@@ -81,7 +81,7 @@ if (isset($_GET['logout'])) {
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <img class="h-16 w-12 object-cover rounded" src="<?php echo htmlspecialchars($movie['poster_url']); ?>" alt="">
+                                    <img class="h-16 w-12 object-cover rounded" src="<?php echo getImageUrl($movie['poster_url']); ?>" alt="">
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($movie['title']); ?></div>
                                         <div class="text-sm text-gray-500"><?php echo htmlspecialchars(substr($movie['description'], 0, 50)) . '...'; ?></div>

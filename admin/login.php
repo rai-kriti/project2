@@ -70,7 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </a>
             </div>
             
-           
+            <div class="mt-4 p-4 bg-gray-50 rounded-md">
+                <p class="text-xs text-gray-600 text-center">
+                    <strong>Demo Credentials:</strong><br>
+                    Username: admin<br>
+                    Password: admin123
+                </p>
+            </div>
         </div>
     </div>
 </body>

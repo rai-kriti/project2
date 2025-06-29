@@ -1,7 +1,5 @@
 <?php
 require_once '../includes/functions.php';
-
-// Require admin login
 requireAdminLogin();
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -83,12 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-4xl mx-auto">
             <?php if ($error): ?>
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                        <?php echo htmlspecialchars($error); ?>
-                    </div>
+                    <?php echo htmlspecialchars($error); ?>
                 </div>
             <?php endif; ?>
 
@@ -161,28 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div>
                                 <label for="poster_image" class="block text-sm font-medium text-gray-700 mb-2">Update Movie Poster (Optional)</label>
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-red-400 transition-colors">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="poster_image" class="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
-                                                <span>Upload new poster</span>
-                                                <input id="poster_image" name="poster_image" type="file" class="sr-only" accept="image/*" onchange="previewImage(this)">
-                                            </label>
-                                            <p class="pl-1">or drag and drop</p>
-                                        </div>
-                                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
-                                        <p class="text-xs text-gray-400">Leave empty to keep current poster</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- New Image Preview -->
-                                <div id="imagePreview" class="mt-4 hidden">
-                                    <p class="text-sm text-gray-600 mb-2">New poster preview:</p>
-                                    <img id="previewImg" src="/placeholder.svg" alt="Preview" class="max-w-xs h-48 object-cover rounded-lg shadow-md">
-                                </div>
+                                <input type="file" id="poster_image" name="poster_image" accept="image/*" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                <p class="text-xs text-gray-500 mt-1">Leave empty to keep current poster</p>
                             </div>
                             
                             <div>
@@ -210,59 +184,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </main>
-
-    <script>
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('imagePreview').classList.remove('hidden');
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // Drag and drop functionality
-        const dropZone = document.querySelector('.border-dashed');
-        const fileInput = document.getElementById('poster_image');
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) {
-            dropZone.classList.add('border-red-400', 'bg-red-50');
-        }
-
-        function unhighlight(e) {
-            dropZone.classList.remove('border-red-400', 'bg-red-50');
-        }
-
-        dropZone.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            fileInput.files = files;
-            previewImage(fileInput);
-        }
-    </script>
 </body>
 </html>
